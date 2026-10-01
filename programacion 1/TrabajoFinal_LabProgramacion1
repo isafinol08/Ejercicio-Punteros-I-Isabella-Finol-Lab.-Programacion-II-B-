@@ -1,0 +1,309 @@
+#include <iostream>
+
+using namespace std;
+
+enum TipoCliente { MENOR = 1, ADULTO, ADULTO_MAYOR };
+
+struct Asiento {//estructura que nos servira para mas tarde 
+    bool ocupado = false;
+    string nombre;
+    string cedula;
+    short int edad;
+    short int tipocliente;
+};
+
+void goodcum_1(){//bienvenida en ingles = goodcum
+    cout << "======================================" << endl;
+    cout << "                                      " << endl;
+    cout << "  Copia barata y de bajo presupuesto  " << endl;
+    cout << "           de cines unidos            " << endl;
+    cout << "                                      " << endl;
+    cout << "======================================" << endl;
+}
+
+void goodcum_2(string nombre){//parte 2 de la bienvenida
+    cout << "Miau miau: A verga papi si es " << nombre << " nuestro cliente favorito :D" << endl;
+    cout << "te preguntaras como se llama este cine, cierto?" << endl;
+    cout << "El nombre de este recinto es: El bigote de mayuya" << endl;
+    cout << "Buen nombre, no crees?" << endl;
+    cout << "En fin te dejo con Flavio que es el que te va a decir que puedes hacer" << endl;
+    cout << "Bye bye corazon, espero te diviertas y te guste la locura que veras";
+} 
+
+void mostrarmapa(Asiento matriz[8][10]) {//acordarme de acomodar las columnas, si acomode las columnas
+    cout << "El mapa de la sala es el siguiente: " << endl;
+    cout << "  1   2   3   4   5   6   7   8   9   10" << endl;
+    for (int i = 0; i < 8; i++) {
+        cout << (i+1);//asi fue como me funciono para que se numeren las filas, que horrible sinceramente
+        for (int j = 0; j < 10; j++){
+            if (matriz[i][j].ocupado == false){
+                cout << "[-] ";
+            }else{
+                cout << "[X] ";
+            }
+        }
+        cout << endl;
+    }
+}
+
+void pausarylimpiar() { //Esta monda se encarga de pausar y limpiar, si es una boberia explicarlo pero por si acaso
+    cin.ignore();
+    cin.get();
+    system("cls");
+}
+
+void error(short int &valor){//error pero con enteros
+    if (cin.fail()){//detecta si no metio un numero
+        cin.clear();//limpia
+        cin.ignore(1000, '\n');//vacia
+        cout << "Error: No se permiten stranger things." << endl;
+    }
+    cout << "Error: Por favor introduce un numero valido: ";
+    cin >> valor;
+}
+
+void pedircoordenadas(short int &f, short int &c){
+    cout << "Indica las coordenadas del asiento estes interesado" << endl;
+                cout << "Indique la fila: ";
+                cin >> f;
+
+                while(f < 1 || 8 < f){
+                    error(f);
+                    system("cls");
+                }
+
+                cout << "Indique la columna: ";
+                cin >> c;
+
+                while(c < 1 || 10 < c){
+                    error(c);
+                    system("cls");
+                }
+
+}
+
+void comprobarasiento(short int &f, short int &c){
+    f--;
+    c--;
+    for (int i = 0; i < 8; i++){
+        for(int j = 0; j < 10; j++){
+            if(c == j){
+                break;
+            }
+        }
+        if(f == i){
+            break;
+        }
+    }
+}
+
+void consultarinformacion(short int f, short int c, Asiento matriz[8][10]){
+    mostrarmapa(matriz);
+    pedircoordenadas(f,c);
+    comprobarasiento(f,c);
+    if (matriz[f][c].ocupado == false){
+        cout << "El asiento " << (f+1) << " - " << (c+1) << " esta disponible para la compra";
+    }else{
+        cout << "Datos del Asiento ocupado:\n" << endl;
+        cout << "Nombre: " << matriz[f][c].nombre << endl;
+        cout << "Cedula: " << matriz[f][c].cedula << endl;
+        cout << "Edad: " << matriz [f][c].edad << endl;
+    }
+
+    pausarylimpiar();
+}
+
+void indicartipocliente(short int f, short int c, Asiento matriz[8][10]) {
+    short int edad = matriz[f][c].edad;
+
+    if (edad >= 1 && edad < 18) {
+        matriz[f][c].tipocliente = MENOR;
+    } else if (edad >= 18 && edad < 60) {
+        matriz[f][c].tipocliente = ADULTO;
+    } else if (edad >= 60 && edad < 100) {
+        matriz[f][c].tipocliente = ADULTO_MAYOR;
+    } 
+}
+
+void pedirCedula(string &cedula) {
+    bool valida = false;
+    do {
+        cout << "Ingrese su cedula (maximo 8 digitos): ";
+        cin >> cedula;
+
+        if (cedula.length() > 8) {
+            cout << "Error: Cedula invalida. Excede los 8 digitos permitidos." << endl;
+            continue;
+        }
+
+        bool esNumero = true;
+        for (size_t i = 0; i < cedula.length(); i++) {
+            if (!isdigit(cedula[i])) {
+                esNumero = false;
+                break;
+            }
+        }
+
+        if (!esNumero) {
+            cout << "Error: Cedula invalida. Solo debe contener numeros." << endl;
+        } else {
+            valida = true;
+        }
+
+    } while (!valida);
+}
+
+void pedirNombreCompleto(string &nombre) {
+    cout << "Ingrese nombre y apellido: ";
+    cin.ignore(); // Limpia el salto de línea residual que haya dejado la lectura anterior
+    getline(cin, nombre); // Lee la línea completa, incluyendo espacios
+}
+
+void comprarasiento(short int &f, short int &c, Asiento matriz[8][10]) {
+    short int cantidad = 0;
+    cout << "¿Cuantas entradas deseas comprar?: ";
+    cin >> cantidad;
+
+    while (cin.fail() || cantidad <= 0) {
+        error(cantidad);
+    }
+
+    for (int i = 0; i < cantidad; i++) {
+        system("cls");
+        cout << "========================================" << endl;
+        cout << "   COMPRA DE ENTRADA " << (i + 1) << " DE " << cantidad << endl;
+        cout << "========================================" << endl;
+
+        mostrarmapa(matriz);
+        pedircoordenadas(f, c);
+        comprobarasiento(f, c);
+
+        while (matriz[f][c].ocupado) {
+            cout << "\n¡El asiento " << (f + 1) << "-" << (c + 1) << " ya esta ocupado! Selecciona otro." << endl;
+            pedircoordenadas(f, c);
+            comprobarasiento(f, c);
+        }
+
+        cout << "\nIngrese los datos de la persona:" << endl;
+        
+        // 1. Lectura del Nombre Completo (soporta espacios)
+        pedirNombreCompleto(matriz[f][c].nombre);
+
+        // 2. Validación de Cédula (máximo 8 dígitos)
+        pedirCedula(matriz[f][c].cedula);
+
+        // 3. Validación de Edad (máximo 100)
+        cout << "Edad: ";
+        cin >> matriz[f][c].edad;
+
+        while (cin.fail() || matriz[f][c].edad <= 0 || matriz[f][c].edad > 100) {
+            if (matriz[f][c].edad > 100) {
+                cout << "Error: Como es que sigues vivo bro? La edad no puede ser mayor a 100." << endl;
+            } else {
+                cout << "Error: Por favor introduce una edad valida (1 - 100)." << endl;
+            }
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Ingrese la edad nuevamente: ";
+            cin >> matriz[f][c].edad;
+        }
+
+        indicartipocliente(f, c, matriz);
+        matriz[f][c].ocupado = true;
+
+        cout << "\n-> ¡Asiento " << (f + 1) << "-" << (c + 1) << " registrado a nombre de " 
+             << matriz[f][c].nombre << " con exito!" << endl;
+        pausarylimpiar();
+    }
+}
+
+int main() {
+
+    short int opcion, f, c, cancelar;
+    bool mayuya = false;
+    Asiento matriz[8][10];
+
+    string suero_amen;//iba a escribir nombre de usuario en ingles pero mi dislexia hizo que escribiera suero y asi se quedo
+    
+    cout << "Holap, me puedes indicar tu nombre: ";
+    cin >> suero_amen;
+
+    system("cls");
+    
+
+    
+    goodcum_1();
+    pausarylimpiar();
+    goodcum_2(suero_amen);
+    pausarylimpiar();
+
+    do {
+        
+
+        cout << "Aqui te presento las opciones del cine: " <<endl;
+        cout << "1. Ver mapa de la sala.                     2. Consultar informacion de un asiento." << endl;
+        cout << "3. Comprar/Reservar un asiento.             4. Cancelar reserva." << endl;
+        cout << "5. Reporte general de la sala.              6. Salir." << endl;
+        cout << "Inserte la opcion a elegir: ";
+        cin >> opcion;
+
+        while (opcion < 1 || opcion > 6) {
+            error(opcion);
+            system("cls");
+        }
+
+        system("cls");
+        
+        switch (opcion) {
+            case 1:
+                cout << "Has seleccionado: Ver mapa de la sala." <<endl;
+                pausarylimpiar();
+                mostrarmapa(matriz);
+                pausarylimpiar();
+                break;
+            case 2:
+                cout << "Has seleccionado: Consultar informacion de un asiento." << endl;
+                pausarylimpiar();
+                consultarinformacion(f,c,matriz);
+                break;
+            case 3:
+                cout << "Has seleccionado: Comprar/Reservar un asiento." <<endl;
+                pausarylimpiar();
+                comprarasiento(f,c,matriz);
+                break;
+            case 4:
+                cout << "Has seleccionado: Cancelar reserva." <<endl;
+                pausarylimpiar();
+                pedircoordenadas(f, c);
+                if (matriz[f][c].ocupado == false){
+                    cout << "El asiento " << (f+1) << " - " << (c+1) << " se encuentra disponible, no hay nada que cancelar >:D"; 
+                    break;
+                }else{
+                    cout << "El asiento " << (f+1) << " - " << (c+1) << " esta ocupado." << endl;   
+                    cout << "Desea canselar la reserva? (1 = Si, 2 = No): ";
+                    cin >> cancelar;
+                    while (cancelar < 1 || cancelar > 2){
+                        error(cancelar);
+                        system("cls");
+                    }
+                }
+                break;
+            case 5:
+                cout << "Has seleccionado: Reporte general de la sala." <<endl;
+                pausarylimpiar();
+                break;
+            case 6:
+                cout << "Has seleccionado: Salir." <<endl;
+                pausarylimpiar();
+                cout << "Gracias por usar esta monda de programa, sayonara." << endl;
+                pausarylimpiar();
+                mayuya = true;
+                break;
+        }
+    
+    }while(mayuya == false);
+    
+    cout << "Has salido excitantemente del programa";
+
+return 0;
+}
